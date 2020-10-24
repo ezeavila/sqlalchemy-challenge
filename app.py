@@ -52,6 +52,21 @@ def precipitation():
     return jsonify(precipitation)
 
 
+@app.route("/api/v1.0/stations")
+def stations():
+    
+    session = Session(engine)
+
+    stations = [Measurement.station,func.count(Measurement.id)]
+
+    total_stations = session.query(*stations).\
+    group_by(Measurement.station).\
+    order_by(Measurement.station).all()
+
+    session.close()
+
+    return jsonify(total_stations)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
