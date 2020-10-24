@@ -24,7 +24,7 @@ def welcome():
         f"Welcome to our page. Available routes: <br/>"
         f"Precipitation: /api/v1.0/precipitation <br/>"
         f"Stations: /api/v1.0/stations <br/>"
-        f"Temperature: /api/v1.0/stations <br/>"
+        f"Temperature: /api/v1.0/tobs <br/>"
     )
 
 @app.route("/api/v1.0/precipitation")
@@ -67,6 +67,21 @@ def stations():
 
     return jsonify(total_stations)
 
+
+@app.route("/api/v1.0/tobs")
+def tobs():
+    
+   session = Session(engine)
+
+   temp = [Measurement.station,func.min(Measurement.tobs),func.max(Measurement.tobs),func.avg(Measurement.tobs) ]
+
+   min_temp = session.query(*temp).\
+   group_by(Measurement.station).\
+   order_by(Measurement.station).all()
+    
+   session.close()
+
+   return jsonify(min_temp)
 
 if __name__ == "__main__":
     app.run(debug=True)
